@@ -9,10 +9,11 @@ import {
   Button,
   TrashIcon,
   Spinner,
+  IconButton,
 } from 'evergreen-ui';
 import AddTopicDialog from './components/Dialogs/AddTopicDialog';
 import AddPhraseDialog from './components/Dialogs/AddPhraseDialog';
-import { getTopics } from './utilities/topics';
+import { getTopics, deleteTopic } from './utilities/topics';
 import { getPhrases, deletePhrase } from './utilities/phrases';
 import { timestampToDate } from './utilities/dateTime';
 
@@ -145,7 +146,26 @@ class App extends React.PureComponent {
               <Pane display="flex" justifyContent="space-between">
                 <Pane display="flex" alignItems="center" marginBottom="16">
                   <ColorCircle bg={this.state.selectedTopic.color} />
-                  <Heading size={900}>{this.state.selectedTopic.name}</Heading>
+                  <Heading size={900} marginRight={8}>
+                    {this.state.selectedTopic.name}
+                  </Heading>
+                  <IconButton
+                    onClick={() => {
+                      const topicId = this.state.selectedTopic.id;
+
+                      this.setState(
+                        {
+                          topics: this.state.topics.filter(
+                            (topic) => topic.id !== topicId,
+                          ),
+                          selectedTopic: this.state.topics[0] || {},
+                        },
+                        () => deleteTopic(topicId),
+                      );
+                    }}
+                    icon={TrashIcon}
+                    intent="danger"
+                  />
                 </Pane>
                 <AddPhraseDialog
                   topics={this.state.topics}
