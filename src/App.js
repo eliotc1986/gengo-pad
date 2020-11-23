@@ -8,6 +8,7 @@ import {
   Paragraph,
   Button,
   TrashIcon,
+  Spinner,
 } from 'evergreen-ui';
 import AddTopicDialog from './components/Dialogs/AddTopicDialog';
 import AddPhraseDialog from './components/Dialogs/AddPhraseDialog';
@@ -29,7 +30,7 @@ const SidebarNavigation = styled.aside`
 `;
 
 const MainContent = styled(Flex)`
-  padding: 24px 32px;
+  padding: 40px;
   height: 100%;
   min-height: 100vh;
   flex-direction: column;
@@ -92,7 +93,17 @@ class App extends React.PureComponent {
   }
 
   render() {
-    if (this.state.isLoading) return null;
+    if (this.state.isLoading)
+      return (
+        <Pane
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          height={400}
+        >
+          <Spinner />
+        </Pane>
+      );
 
     return (
       <Flex>
@@ -107,6 +118,7 @@ class App extends React.PureComponent {
                   {this.state.topics.map((topic) => {
                     return (
                       <Menu.Item
+                        key={topic.id}
                         onClick={() =>
                           this.setState({
                             selectedTopic: topic,
@@ -132,35 +144,37 @@ class App extends React.PureComponent {
         </SidebarNavigation>
         <MainContent as="main">
           {!isEmpty(this.state.selectedTopic) && (
-            <Pane padding={16} border="default" elevation={1}>
-              <Pane display="flex" alignItems="center" marginBottom="16">
-                <ColorCircle bg={this.state.selectedTopic.color} />
-                <Heading size={900}>{this.state.selectedTopic.name}</Heading>
+            <Pane padding={28} border="default" elevation={1}>
+              <Pane display="flex" justifyContent="space-between">
+                <Pane display="flex" alignItems="center" marginBottom="16">
+                  <ColorCircle bg={this.state.selectedTopic.color} />
+                  <Heading size={900}>{this.state.selectedTopic.name}</Heading>
+                </Pane>
+                <AddPhraseDialog
+                  topics={this.state.topics}
+                  topicId={this.state.selectedTopic.id}
+                  onAdd={() =>
+                    this.setState({ phrases: getPhrases() }, () => {
+                      this.setState({
+                        selectedTopicPhrases: this.state.phrases.filter(
+                          (phrase) =>
+                            phrase.topicId === this.state.selectedTopic.id,
+                        ),
+                      });
+                    })
+                  }
+                />
               </Pane>
               <Paragraph marginBottom="16">
                 {this.state.selectedTopic.description}
               </Paragraph>
-              <AddPhraseDialog
-                topics={this.state.topics}
-                topicId={this.state.selectedTopic.id}
-                onAdd={() =>
-                  this.setState({ phrases: getPhrases() }, () => {
-                    this.setState({
-                      selectedTopicPhrases: this.state.phrases.filter(
-                        (phrase) =>
-                          phrase.topicId === this.state.selectedTopic.id,
-                      ),
-                    });
-                  })
-                }
-              />
 
               {!isEmpty(this.state.selectedTopicPhrases) && (
                 <Pane marginTop={16}>
                   <UnstyledList>
                     {this.state.selectedTopicPhrases.map((phrase) => {
                       return (
-                        <UnstyledListItem>
+                        <UnstyledListItem key={phrase.id}>
                           <Paragraph marginBottom={4} color="muted">
                             {timestampToDate(phrase.created)}
                           </Paragraph>
@@ -171,7 +185,20 @@ class App extends React.PureComponent {
                           >
                             <Heading size={700}>{phrase.meaning}</Heading>
                             <Button
-                              onClick={() => deletePhrase(phrase.id)}
+                              onClick={() => {
+                                const phraseId = phrase.id;
+
+                                this.setState(
+                                  {
+                                    selectedTopicPhrases: this.state.selectedTopicPhrases.filter(
+                                      (phrase) => phrase.id !== phraseId,
+                                    ),
+                                  },
+                                  () => {
+                                    deletePhrase(phraseId);
+                                  },
+                                );
+                              }}
                               iconBefore={TrashIcon}
                               intent="danger"
                             >

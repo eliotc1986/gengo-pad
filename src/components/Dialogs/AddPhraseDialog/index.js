@@ -42,6 +42,7 @@ class AddPhraseDialog extends React.PureComponent {
         <Button
           onClick={() => this.setState({ visible: true })}
           appearance="primary"
+          intent="success"
           height={32}
         >
           Add phrase
@@ -76,14 +77,12 @@ class AddPhraseDialog extends React.PureComponent {
           <SelectField
             label="Topic"
             onChange={(e) => this.setState({ topicId: e.target.value })}
+            defaultValue={this.props.topicId}
             required
           >
             {this.state.topics.map((topic) => {
               return (
-                <option
-                  value={topic.id}
-                  selected={topic.id === this.state.topicId}
-                >
+                <option value={topic.id} key={topic.id}>
                   {topic.name}
                 </option>
               );
