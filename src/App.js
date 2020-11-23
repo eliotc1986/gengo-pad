@@ -70,7 +70,6 @@ class App extends React.PureComponent {
       topics: [],
       phrases: [],
       selectedTopic: {},
-      selectedTopicPhrases: [],
       isLoading: true,
     };
   }
@@ -85,9 +84,6 @@ class App extends React.PureComponent {
       topics,
       phrases,
       selectedTopic,
-      selectedTopicPhrases: hasTopics
-        ? phrases.filter((phrase) => phrase.topicId === selectedTopic.id)
-        : [],
       isLoading: false,
     });
   }
@@ -104,6 +100,10 @@ class App extends React.PureComponent {
           <Spinner />
         </Pane>
       );
+
+    const selectedTopicPhrases = this.state.phrases.filter(
+      (phrase) => phrase.topicId === this.state.selectedTopic.id,
+    );
 
     return (
       <Flex>
@@ -122,9 +122,6 @@ class App extends React.PureComponent {
                         onClick={() =>
                           this.setState({
                             selectedTopic: topic,
-                            selectedTopicPhrases: this.state.phrases.filter(
-                              (phrase) => phrase.topicId === topic.id,
-                            ),
                           })
                         }
                       >
@@ -153,26 +150,17 @@ class App extends React.PureComponent {
                 <AddPhraseDialog
                   topics={this.state.topics}
                   topicId={this.state.selectedTopic.id}
-                  onAdd={() =>
-                    this.setState({ phrases: getPhrases() }, () => {
-                      this.setState({
-                        selectedTopicPhrases: this.state.phrases.filter(
-                          (phrase) =>
-                            phrase.topicId === this.state.selectedTopic.id,
-                        ),
-                      });
-                    })
-                  }
+                  onAdd={() => this.setState({ phrases: getPhrases() })}
                 />
               </Pane>
               <Paragraph marginBottom="16">
                 {this.state.selectedTopic.description}
               </Paragraph>
 
-              {!isEmpty(this.state.selectedTopicPhrases) && (
+              {!isEmpty(selectedTopicPhrases) && (
                 <Pane marginTop={16}>
                   <UnstyledList>
-                    {this.state.selectedTopicPhrases.map((phrase) => {
+                    {selectedTopicPhrases.map((phrase) => {
                       return (
                         <UnstyledListItem key={phrase.id}>
                           <Paragraph marginBottom={4} color="muted">
@@ -190,7 +178,7 @@ class App extends React.PureComponent {
 
                                 this.setState(
                                   {
-                                    selectedTopicPhrases: this.state.selectedTopicPhrases.filter(
+                                    phrases: this.state.phrases.filter(
                                       (phrase) => phrase.id !== phraseId,
                                     ),
                                   },

@@ -7,22 +7,30 @@ export const getTopics = () => {
 };
 
 export const addTopic = (topic) => {
-  let prevTopics = getLSItem(LS_KEYS.TOPICS);
+  try {
+    let prevTopics = getLSItem(LS_KEYS.TOPICS);
 
-  const saveTopic = {
-    ...topic,
-    id: nanoid(),
-    sortOrder: new Date().getTime(),
-    created: new Date().getTime(),
-  };
+    const saveTopic = {
+      ...topic,
+      id: nanoid(),
+      sortOrder: new Date().getTime(),
+      created: new Date().getTime(),
+    };
 
-  const newTopics = [...prevTopics, saveTopic];
-  setLSItem(LS_KEYS.TOPICS, newTopics);
+    const newTopics = [...prevTopics, saveTopic];
+    setLSItem(LS_KEYS.TOPICS, newTopics);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const deleteTopic = (topicId) => {
-  let prevTopics = getLSItem(LS_KEYS.TOPICS);
+  try {
+    let prevTopics = getLSItem(LS_KEYS.TOPICS);
 
-  const newTopics = prevTopics.filter((topic) => topic.id !== topicId);
-  setLSItem(LS_KEYS.TOPICS, newTopics);
+    const newTopics = prevTopics.filter((topic) => topic.id !== topicId);
+    setLSItem(LS_KEYS.TOPICS, newTopics);
+  } catch (err) {
+    console.log(err);
+  }
 };
