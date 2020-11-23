@@ -1,24 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+import styled from 'styled-components';
+import {
+  Heading,
+  Pane,
+  Button,
+  Dialog,
+  TextInputField,
+  TextareaField,
+} from 'evergreen-ui';
+import { useState } from 'react';
+import AddTopicDialog from './components/Dialogs/AddTopicDialog';
+
+const Flex = styled.div`
+  display: flex;
+`;
+
+const SidebarNavigation = styled(Flex)`
+  background-color: #f9f9fb;
+  width: 270px;
+  height: 100%;
+  min-height: 100vh;
+  padding: 24px 32px;
+  border-right: 1px solid #efefef;
+`;
+
+const ColorPicker = styled.div`
+  position: relative;
+`;
+
+const ColorBox = styled.div``;
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Flex>
+      <SidebarNavigation>
+        <Heading size={700}>Gengo Pad</Heading>
+
+        <AddTopicDialog />
+      </SidebarNavigation>
+    </Flex>
   );
 }
 
