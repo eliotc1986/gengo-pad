@@ -1,5 +1,11 @@
 import React from 'react';
-import { Button, Dialog, TextInputField, TextareaField } from 'evergreen-ui';
+import {
+  Button,
+  Dialog,
+  TextInputField,
+  TextareaField,
+  EditIcon,
+} from 'evergreen-ui';
 import { addTopic } from '../../../utilities/topics';
 
 class AddTopicDialog extends React.PureComponent {
@@ -10,21 +16,29 @@ class AddTopicDialog extends React.PureComponent {
       visible: false,
       name: '',
       description: '',
-      color: '',
+      color: '#000000',
     };
   }
 
-  handleAddTopic = () => {
-    this.setState({ visible: false });
+  handleAddTopic = (cb) => {
     const { name, description, color } = this.state;
 
     addTopic({ name, color, description });
+    this.props.onAdd();
+    cb();
   };
 
   render() {
     return (
       <>
-        <Button onClick={() => this.setState({ visible: true })}>Show</Button>
+        <Button
+          onClick={() => this.setState({ visible: true })}
+          appearance="minimal"
+          height={32}
+          iconBefore={EditIcon}
+        >
+          Add topic
+        </Button>
         <Dialog
           title="New Topic"
           intent="success"
@@ -32,7 +46,8 @@ class AddTopicDialog extends React.PureComponent {
           preventBodyScrolling
           confirmLabel="Save"
           isConfirmDisabled={!(this.state.name && this.state.color)}
-          onCloseComplete={this.handleAddTopic}
+          onCloseComplete={() => this.setState({ visible: false })}
+          onConfirm={(close) => this.handleAddTopic(close)}
         >
           <TextInputField
             label="Name"
