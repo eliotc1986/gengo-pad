@@ -13,6 +13,7 @@ export const addTopic = (topic) => {
     ...topic,
     id: nanoid(),
     sortOrder: new Date().getTime(),
+    created: new Date().getTime(),
   };
 
   const newTopics = [...prevTopics, saveTopic];

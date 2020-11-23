@@ -3,7 +3,9 @@ import { isEmpty } from 'ramda';
 import styled from 'styled-components';
 import { Heading, Menu, Pane, Paragraph } from 'evergreen-ui';
 import AddTopicDialog from './components/Dialogs/AddTopicDialog';
+import AddPhraseDialog from './components/Dialogs/AddPhraseDialog';
 import { getTopics } from './utilities/topics';
+import { getPhrases } from './utilities/phrases';
 
 const Flex = styled.div`
   display: flex;
@@ -40,15 +42,19 @@ class App extends React.PureComponent {
 
     this.state = {
       topics: [],
-      expressions: [],
+      phrases: [],
       selectedTopic: {},
-      selectedTopicExpressions: [],
+      selectedTopicPhrases: [],
       isLoading: true,
     };
   }
 
   componentDidMount() {
-    this.setState({ topics: getTopics(), isLoading: false });
+    this.setState({
+      topics: getTopics(),
+      phrases: getPhrases(),
+      isLoading: false,
+    });
   }
 
   render() {
@@ -93,6 +99,11 @@ class App extends React.PureComponent {
               <Paragraph marginBottom="16">
                 {this.state.selectedTopic.description}
               </Paragraph>
+              <AddPhraseDialog
+                topics={this.state.topics}
+                topicId={this.state.selectedTopic.id}
+                onAdd={() => this.setState({ phrases: getPhrases() })}
+              />
             </Pane>
           )}
         </MainContent>
