@@ -1,33 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Dialog,
   TextInputField,
   TextareaField,
   SelectField,
+  Pane,
 } from 'evergreen-ui';
 import { addPhrase } from '../../../utilities/phrases';
 
-class AddPhraseDialog extends React.PureComponent {
+class AddPhraseForm extends React.PureComponent {
   constructor(props) {
     super(props);
 
     this.state = {
-      visible: false,
-      topics: this.props.topics || [],
       phrase: '',
       meaning: '',
       notes: '',
+      topics: this.props.topics || [],
       topicId: this.props.topicId || '',
     };
   }
 
-  handleAddPhrase = (cb) => {
+  handleAddPhrase = () => {
     const { phrase, meaning, notes, topicId } = this.state;
+    const { onAdd, closeDialog } = this.props;
 
     addPhrase({ phrase, meaning, notes, topicId });
-    this.props.onAdd();
-    cb();
+    closeDialog();
+    onAdd();
   };
 
   render() {
@@ -39,59 +40,86 @@ class AddPhraseDialog extends React.PureComponent {
 
     return (
       <>
-        <Button
-          onClick={() => this.setState({ visible: true })}
-          appearance="primary"
-          intent="success"
-          height={32}
+        <TextInputField
+          label="Phrase"
+          value={this.state.phrase}
+          onChange={(e) => this.setState({ phrase: e.target.value })}
+          required
+        />
+        <TextInputField
+          label="Meaning"
+          value={this.state.meaning}
+          onChange={(e) => this.setState({ meaning: e.target.value })}
+          required
+        />
+        <TextareaField
+          label="Notes (optional)"
+          value={this.state.notes}
+          onChange={(e) => this.setState({ notes: e.target.value })}
+        />
+        <SelectField
+          label="Topic"
+          onChange={(e) => this.setState({ topicId: e.target.value })}
+          defaultValue={this.props.topicId}
+          required
         >
-          Add phrase
-        </Button>
-        <Dialog
-          title="New Phrase"
-          intent="success"
-          isShown={this.state.visible}
-          preventBodyScrolling
-          confirmLabel="Save"
-          isConfirmDisabled={isSubmitDisabled}
-          onCloseComplete={() => this.setState({ visible: false })}
-          onConfirm={(close) => this.handleAddPhrase(close)}
-        >
-          <TextInputField
-            label="Phrase"
-            value={this.state.phrase}
-            onChange={(e) => this.setState({ phrase: e.target.value })}
-            required
-          />
-          <TextInputField
-            label="Meaning"
-            value={this.state.meaning}
-            onChange={(e) => this.setState({ meaning: e.target.value })}
-            required
-          />
-          <TextareaField
-            label="Notes (optional)"
-            value={this.state.notes}
-            onChange={(e) => this.setState({ notes: e.target.value })}
-          />
-          <SelectField
-            label="Topic"
-            onChange={(e) => this.setState({ topicId: e.target.value })}
-            defaultValue={this.props.topicId}
-            required
+          {this.state.topics.map((topic) => {
+            return (
+              <option value={topic.id} key={topic.id}>
+                {topic.name}
+              </option>
+            );
+          })}
+        </SelectField>
+        <Pane display="flex" justifyContent="flex-end" marginTop={24}>
+          <Button onClick={this.props.closeDialog} marginRight={4}>
+            Cancel
+          </Button>
+          <Button
+            intent="success"
+            appearance="primary"
+            onClick={this.handleAddTopic}
+            disabled={isSubmitDisabled}
           >
-            {this.state.topics.map((topic) => {
-              return (
-                <option value={topic.id} key={topic.id}>
-                  {topic.name}
-                </option>
-              );
-            })}
-          </SelectField>
-        </Dialog>
+            Save
+          </Button>
+        </Pane>
       </>
     );
   }
 }
+const AddPhraseDialog = ({ topics, topicId, onAdd }) => {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <>
+      <Button
+        onClick={() => setVisible(true)}
+        appearance="primary"
+        intent="success"
+        height={32}
+      >
+        Add phrase
+      </Button>
+      <Dialog
+        title="New Phrase"
+        intent="success"
+        isShown={visible}
+        preventBodyScrolling
+        hasFooter={false}
+        onCloseComplete={() => setVisible(false)}
+      >
+        {({ close }) => (
+          <AddPhraseForm
+            topics={topics}
+            topicId={topicId}
+            onAdd={onAdd}
+            closeDialog={close}
+          />
+        )}
+      </Dialog>
+    </>
+  );
+};
 
 export default AddPhraseDialog;

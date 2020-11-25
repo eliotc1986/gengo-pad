@@ -10,12 +10,14 @@ import {
   TrashIcon,
   Spinner,
   IconButton,
+  Pill,
 } from 'evergreen-ui';
 import AddTopicDialog from './components/Dialogs/AddTopicDialog';
 import AddPhraseDialog from './components/Dialogs/AddPhraseDialog';
 import { getTopics, deleteTopic } from './utilities/topics';
 import { getPhrases, deletePhrase } from './utilities/phrases';
 import { timestampToDate } from './utilities/dateTime';
+import { getPhraseCount } from './utilities/getPhraseCount';
 
 const Flex = styled.div`
   display: flex;
@@ -126,7 +128,16 @@ class App extends React.PureComponent {
                           })
                         }
                       >
-                        {topic.name}
+                        <Pane
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          {topic.name}
+                          <Pill display="inline-flex" margin={8}>
+                            {getPhraseCount(topic.id, this.state.phrases)}
+                          </Pill>
+                        </Pane>
                       </Menu.Item>
                     );
                   })}
