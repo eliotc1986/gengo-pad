@@ -71,6 +71,7 @@ class AddTopicForm extends React.PureComponent {
                     }}
                     bg={color}
                     key={color}
+                    autoFocus={this.state.color === color}
                   />
                 ))}
               </Pane>
