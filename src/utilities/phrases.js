@@ -1,7 +1,6 @@
 import { nanoid } from 'nanoid';
 import { getLSItem, setLSItem } from './localStorage';
 import { LS_KEYS } from '../constants';
-import { tryCatch } from 'ramda';
 
 export const getPhrases = () => {
   return getLSItem(LS_KEYS.PHRASES);
