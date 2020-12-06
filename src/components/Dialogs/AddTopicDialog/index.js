@@ -7,7 +7,6 @@ import {
   TextareaField,
   EditIcon,
   Pane,
-  Paragraph,
   Popover,
   Position,
   Heading,

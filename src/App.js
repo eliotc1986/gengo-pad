@@ -235,7 +235,7 @@ class App extends React.PureComponent {
                                 this.setState(
                                   {
                                     phrases: this.state.phrases.filter(
-                                      (phrase) => phraseId !== phraseId,
+                                      (phrase) => phrase.id !== phraseId,
                                     ),
                                   },
                                   () => {
