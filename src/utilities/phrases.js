@@ -9,8 +9,7 @@ export const getPhrases = () => {
 
 export const addPhrase = (phrase) => {
   try {
-    let prevPhrases = getLSItem(LS_KEYS.PHRASES);
-
+    const prevPhrases = getLSItem(LS_KEYS.PHRASES);
     const savePhrase = {
       ...phrase,
       id: nanoid(),
@@ -28,9 +27,9 @@ export const addPhrase = (phrase) => {
 
 export const deletePhrase = (phraseId) => {
   try {
-    let prevPhrases = getLSItem(LS_KEYS.PHRASES);
-
+    const prevPhrases = getLSItem(LS_KEYS.PHRASES);
     const newPhrases = prevPhrases.filter((topic) => topic.id !== phraseId);
+
     setLSItem(LS_KEYS.PHRASES, newPhrases);
   } catch (err) {
     console.log(err);

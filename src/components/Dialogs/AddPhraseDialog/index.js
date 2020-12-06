@@ -78,7 +78,7 @@ class AddPhraseForm extends React.PureComponent {
           <Button
             intent="success"
             appearance="primary"
-            onClick={this.handleAddTopic}
+            onClick={this.handleAddPhrase}
             disabled={isSubmitDisabled}
           >
             Save
