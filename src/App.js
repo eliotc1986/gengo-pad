@@ -10,12 +10,14 @@ import {
   TrashIcon,
   Spinner,
   IconButton,
+  HeartIcon,
   Pill,
 } from 'evergreen-ui';
 import AddTopicDialog from './components/Dialogs/AddTopicDialog';
 import AddPhraseDialog from './components/Dialogs/AddPhraseDialog';
 import { getTopics, deleteTopic } from './utilities/topics';
 import { getPhrases, deletePhrase } from './utilities/phrases';
+import { getLikes, addLike, deleteLike, formatLikes } from './utilities/likes';
 import { timestampToDate } from './utilities/dateTime';
 import { getPhraseCount } from './utilities/getPhraseCount';
 
@@ -72,6 +74,7 @@ class App extends React.PureComponent {
     this.state = {
       topics: [],
       phrases: [],
+      likes: [],
       selectedTopic: {},
       isLoading: true,
     };
@@ -80,12 +83,14 @@ class App extends React.PureComponent {
   componentDidMount() {
     const topics = getTopics();
     const phrases = getPhrases();
+    const likes = getLikes();
     const hasTopics = !isEmpty(topics);
     const selectedTopic = hasTopics ? topics[0] : {};
 
     this.setState({
       topics,
       phrases,
+      likes,
       selectedTopic,
       isLoading: false,
     });
@@ -107,6 +112,8 @@ class App extends React.PureComponent {
     const selectedTopicPhrases = this.state.phrases.filter(
       (phrase) => phrase.topicId === this.state.selectedTopic.id,
     );
+
+    const likesLookup = formatLikes(this.state.likes);
 
     return (
       <Flex>
@@ -192,8 +199,11 @@ class App extends React.PureComponent {
                 <Pane marginTop={16}>
                   <UnstyledList>
                     {selectedTopicPhrases.map((phrase) => {
+                      const phraseId = phrase.id;
+                      const likeId = likesLookup[phraseId];
+
                       return (
-                        <UnstyledListItem key={phrase.id}>
+                        <UnstyledListItem key={phraseId}>
                           <Paragraph marginBottom={4} color="muted">
                             {timestampToDate(phrase.created)}
                           </Paragraph>
@@ -202,15 +212,30 @@ class App extends React.PureComponent {
                             justifyContent="space-between"
                             marginBottom={8}
                           >
-                            <Heading size={700}>{phrase.meaning}</Heading>
+                            <Pane display="flex">
+                              <IconButton
+                                icon={HeartIcon}
+                                intent={likeId ? 'danger' : 'none'}
+                                marginRight={8}
+                                onClick={() => {
+                                  if (likeId) {
+                                    deleteLike(likeId);
+                                  } else {
+                                    addLike(phraseId);
+                                  }
+                                  this.setState({ likes: getLikes() });
+                                }}
+                              />
+
+                              <Heading size={700}>{phrase.phrase}</Heading>
+                            </Pane>
+
                             <Button
                               onClick={() => {
-                                const phraseId = phrase.id;
-
                                 this.setState(
                                   {
                                     phrases: this.state.phrases.filter(
-                                      (phrase) => phrase.id !== phraseId,
+                                      (phrase) => phraseId !== phraseId,
                                     ),
                                   },
                                   () => {
@@ -230,7 +255,7 @@ class App extends React.PureComponent {
                             marginBottom={16}
                             borderRadius={3}
                           >
-                            {phrase.phrase}
+                            {phrase.meaning}
                           </Pane>
                         </UnstyledListItem>
                       );
